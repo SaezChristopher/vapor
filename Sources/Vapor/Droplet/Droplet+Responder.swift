@@ -15,6 +15,12 @@ extension Droplet: Responder {
         var responder: Responder
         let request = request
 
+        // allow method to be overriden by _method in data 
+        // https://github.com/vapor/vapor/issues/770
+        if let _method = request.data["_method"]?.string {
+            request.method = Method(_method)
+        }
+
         /*
             The HEAD method is identical to GET.
 

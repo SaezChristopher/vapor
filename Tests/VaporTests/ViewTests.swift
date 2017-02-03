@@ -79,4 +79,20 @@ class ViewTests: XCTestCase {
         let result = try renderer.make(file, [])
         XCTAssert(result.data.string.contains("meta string"))
     }
+
+    func testMethodOverride() throws {
+        let drop = Droplet()
+
+        drop.patch { req in
+            return "yes"
+        }
+
+        let req = Request(method: .post, path: "foo")
+        req.json = try JSON(node: [
+            "_method": "patch"
+        ])
+
+        let res = try drop.respond(to: req)
+        XCTAssertEqual(try res.bodyString(), "yes")
+    }
 }
