@@ -44,7 +44,8 @@ extension Droplet: Responder {
         // Loop through middlewares in order, then pass result to router responder
         responder = middleware.chain(to: routerResponder)
 
-        var response: Response
+        let response: Response
+        
         do {
             response = try responder.respond(to: request)
 
@@ -70,7 +71,7 @@ extension Droplet: Responder {
             }
 
             if request.accept.prefers("html") {
-                return ErrorView.shared.makeResponse(status, status.reasonPhrase)
+                response = try view.make(error).makeResponse()
             } else {
                 var json = JSON([:])
                 try json.set("error", true)
@@ -101,9 +102,10 @@ extension Droplet: Responder {
                         }
                     }
                 }
-                let response = Response(status: status)
-                response.json = json
-                return response
+                let errorResponse = Response(status: status)
+                errorResponse.json = json
+
+                response = errorResponse
             }
         }
 

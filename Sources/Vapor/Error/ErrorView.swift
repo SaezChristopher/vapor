@@ -1,7 +1,7 @@
 import Core
 import HTTP
 
-final class ErrorView {
+fileprivate final class ErrorView {
     let head: Bytes
     let middle: Bytes
     let tail: Bytes
@@ -41,10 +41,24 @@ final class ErrorView {
         response.headers["Content-Type"] = "text/html; charset=utf-8"
         return response
     }
-
-    static var shared: ErrorView {
-        return errorView
-    }
 }
 
-private let errorView = ErrorView()
+fileprivate let errorView = ErrorView()
+
+public extension ViewRenderer {
+    public func make(_ error: Error) throws -> View {
+        let status: Status
+
+        if let abort = error as? AbortError {
+            status = abort.status
+        } else {
+            status = .internalServerError
+        }
+
+        let bytes = errorView.render(
+            code: status.statusCode,
+            message: status.reasonPhrase
+        )
+        return try View(bytes: bytes)
+    }
+}
