@@ -13,7 +13,7 @@ public struct Abort: AbortError, Debuggable {
     /// See Debuggable.readableName
     public static let readableName = "Abort request error"
 
-    /// See Debuggable.reason
+    /// See AbortError.reason
     public let reason: String
 
     /// See Debuggable.identifier
@@ -35,7 +35,7 @@ public struct Abort: AbortError, Debuggable {
     public let gitHubIssues: [String]
 
 
-    init(
+    public init(
         _ status: Status,
         metadata: Node? = nil,
         // Debuggable
